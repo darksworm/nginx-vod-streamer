@@ -1,17 +1,17 @@
 #!/bin/bash
 fps=24
-cd_dur=20
+cd_dur=`expr 60 \* 20`
 audio_fade_dur=15
 fontsize=372
-fontcolor=#b50411
+fontcolor=white
 audio_rate=44100
 
 font=assets/font.ttf
-background=assets/blackness.png
+background=assets/losangeles.png
 thanks=assets/thanks.png
 remember=assets/remember.png
 movie=assets/movie.mp4
-bgmusic=assets/backgroundmusic.mp3
+bgmusic=assets/diehard.opus
 
 export_target=export/prestream.mp4
 
@@ -51,8 +51,8 @@ ffmpeg \
     -loop 1 \
     -i $background \
     -i $bgmusic \
-    -t $cd_dur \
-    -af "volume=0.07,afade=t=out:st=$fade_start:d=$audio_fade_dur" \
+    -t `expr $cd_dur - 365` \
+    -af "volume=0.5,afade=t=out:st=$fade_start:d=$audio_fade_dur" \
     $shared_opts \
     -vf \
     "\
@@ -66,6 +66,28 @@ ffmpeg \
     " \
     -strict -2 \
     tmp/countdown.mp4
+
+cd2_dur=60
+
+ffmpeg \
+    -loop 1 \
+    -i $background \
+    -t $cd2_dur \
+    $blank_audio_opts \
+    -shortest \
+    $shared_opts \
+    -vf \
+    "\
+        fps=$fps, \
+        drawtext=fontfile='$font' \
+        :fontcolor=$fontcolor \
+        :fontsize=$fontsize \
+        :x=(w-text_w)/2 \
+        :y=(h-text_h)/2 \
+        :text='%{eif\:(($cd2_dur-t)/60)\:d\:2}\:%{eif\:mod(($cd2_dur-t),60)\:d\:2}' \
+    " \
+    -strict -2 \
+    tmp/countdown1.mp4
 
 # generate darkness
 ffmpeg \
@@ -97,6 +119,8 @@ ffmpeg \
 prestream_chunks=(\
     tmp/spacer.mp4 \
     tmp/countdown.mp4 \
+    assets/keyframed_commercials.mp4 \
+    tmp/countdown1.mp4 \
     tmp/spacer.mp4 \
     tmp/remember.mp4 \
     tmp/enjoy.mp4 \
