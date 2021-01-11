@@ -79,7 +79,6 @@ videos:
       - rescale1080p
       - shared_options
       - "-ss 5"
-      - "-t 15"
 
   grand_budapest:
     variables:
@@ -88,7 +87,6 @@ videos:
       - "-i $video"
       - rescale1080p
       - shared_options
-      - "-t 15"
 
   nightcrawler:
     variables:
@@ -98,7 +96,6 @@ videos:
       - rescale1080p
       - shared_options
       - "-ss 6"
-      - "-t 15"
 
   midsommar:
     variables:
@@ -107,7 +104,6 @@ videos:
       - "-i $video"
       - rescale1080p
       - shared_options
-      - "-t 15"
 
   countdown_second:
     variables:
@@ -124,8 +120,8 @@ videos:
 
   countdown_first:
     variables:
-      countdown_start: 30
-      duration: 31 #"$(expr $countdown_start - $midsommar_length - $nightcrawler_length - $grand_budapest_length - $whiplash_length - $countdown_second_length)"
+      countdown_start: 1200
+      duration: "$(expr $countdown_start - $midsommar_length - $nightcrawler_length - $grand_budapest_length - $whiplash_length - $countdown_second_length)"
       audio_fade_start: "$(expr $duration - 30)"
       audio_fade_dur: 25
     options:
