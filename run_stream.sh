@@ -15,6 +15,7 @@ if [ -n "$1" ] && [ "$1" -eq "$1" ] 2>/dev/null; then
     skip_seconds=$1
 fi
 
+seconds_left_to_skip=$skip_seconds
 video_skips=()
 for item in ${videos[*]}
 do
@@ -23,12 +24,12 @@ do
 	    -of default=noprint_wrappers=1:nokey=1 \
 	    export/$item | cut -d. -f1`
 
-    if [ "$video_len" -lt "$skip_seconds" ]; then
+    if [ "$video_len" -lt "$seconds_left_to_skip" ]; then
         skip_for_this_video=$video_len
-	skip_seconds=`expr $skip_seconds - $video_len`
+	seconds_left_to_skip=`expr $seconds_left_to_skip - $video_len`
     else
-	skip_for_this_video=$skip_seconds
-	skip_seconds=0
+	skip_for_this_video=$seconds_left_to_skip
+	seconds_left_to_skip=0
     fi
 
     video_skips+=($skip_for_this_video)
@@ -38,7 +39,7 @@ start_time=`date "+%s"`
 
 function finish {
     finish_time=`date "+%s"`
-    echo `expr $finish_time - $start_time` > .last_stream_duration
+    echo `expr $finish_time - $start_time + $skip_seconds` > .last_stream_duration
 }
 trap finish EXIT
 
